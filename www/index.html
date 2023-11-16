@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BSV Transaction Creator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
+    <script src="https://unpkg.com/datapay"></script>
+    <script src="./databutton.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org"></script>
+  </head>
+  <body>
+    <main class="p-12">
+      <h1 class="text-3xl font-semibold">Transactionous <sup>Prime</sup></h1>
+      <h2 class="text-xl font-semibold">Choose a Transaction Template</h2>
+
+      <div class="flex items-center gap-2 text-sm my-2">
+        <button
+          id="template-post"
+          class="rounded bg-black text-white px-3 cursor-pointer"
+          hx-post="/template/post"
+          hx-target="#jsonInput"
+          hx-trigger="click"
+          hx-include="#jsonInput"
+          hx-swap="outerHTML"
+        >
+          MAP Post
+        </button>
+        <button
+          id="template-message"
+          class="rounded bg-black text-white px-3 cursor-pointer"
+          hx-post="/template/message"
+          hx-target="#jsonInput"
+          hx-swap="outerHTML"
+          hx-trigger="click"
+          hx-include="#jsonInput"
+        >
+          MAP Message
+        </button>
+        <button
+          id="template-bid"
+          class="rounded bg-black text-white px-3 cursor-pointer"
+          hx-post="/template/bid"
+          hx-target="#jsonInput"
+          hx-trigger="click"
+          hx-include="#jsonInput"
+          hx-swap="outerHTML"
+        >
+          BAP Identity
+        </button>
+      </div>
+      <h3 class="text-[#aaa]">or create one from scratch</h3>
+      <form>
+        <textarea
+          class="border rounded w-full text-sm"
+          id="jsonInput"
+          name="jsonData"
+          rows="10"
+        >
+        {"data": [], "pay": [], "sign": []}</textarea
+        >
+        <button
+          id="createTransaction"
+          class="rounded bg-black text-white px-3 cursor-pointer"
+          hx-post="/transaction/create"
+          hx-target="#transaction"
+        >
+          Create Transaction
+        </button>
+      </form>
+    </main>
+
+    <section class="p-12">
+      <h2 class="text-xl font-semibold">Transaction</h2>
+      <div
+        id="transaction"
+        class="border rounded p-4 my-2 text-sm overflow-auto"
+      >
+        Create a Transaction First
+      </div>
+      <button
+        id="fetchUtxos"
+        hx-post="/txo/unspent"
+        hx-target="#utxos"
+        hx-include="#jsonInput"
+        hx-trigger="click"
+        class="rounded bg-black text-white px-3 cursor-pointer"
+      >
+        Get UTXOs
+      </button>
+    </section>
+    <section class="p-12">
+      <h2 class="text-xl font-semibold">UTXOS</h2>
+      <div id="utxos" class="border rounded p-4 my-2 text-sm">
+        Choose a template first
+      </div>
+      <button
+        id="selectUtxos"
+        hx-post="/txo/select"
+        hx-target="#signedTx"
+        hx-vals="js:{ transaction: document.getElementById('transaction').innerText }"
+        hx-include="#utxos"
+        hx-trigger="click"
+        class="rounded bg-black text-white px-3 cursor-pointer"
+      >
+        Select Transaction Inputs
+      </button>
+    </section>
+    <section class="p-12">
+      <h2 class="text-xl font-semibold">Identity Signatures</h2>
+      <div id="signedTx" class="border rounded p-4 my-2 text-sm overflow-auto">
+        Select UTXOs first
+      </div>
+      <button
+        id="signTransaction"
+        hx-post="/transaction/sign"
+        hx-target="#signedTx"
+        hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
+        hx-include="#jsonInput"
+        class="rounded bg-black text-white px-3 cursor-pointer"
+      >
+        Sign Transaction
+      </button>
+    </section>
+    <section class="p-12">
+      <h2 class="text-xl font-semibold">BMAP Result</h2>
+      <div id="result" class="border rounded p-4 my-2 text-sm" hx-trigger="decode from:body" hx-post="/transaction/decode" hx-swap="innerText" hx-include="#signedTx" hx-on:decode="console.log('decoding!')" hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
+      >
+        Sign Transaction First
+      </div>
+    </section>
+    <section class="p-12">
+      <h2 class="text-xl font-semibold">Broadcast</h2>
+      <div id="transaction3" class="border rounded p-4 my-2 text-sm">
+        Sign Transaction First
+      </div>
+      <button
+        id="fetchUtxos"
+        class="rounded bg-black text-white px-3 cursor-pointer"
+      >
+        Broadcast
+      </button>
+    </section>
+    <section class="p-12 flex">
+      <h2 class="text-xl font-semibold">Debug</h2>
+      <div
+        class="debug mx-auto rounded text-xs p-4 bg-black/10 max-w-xl overflow-auto"
+      ></div>
+    </section>
+    <!-- <script src="./script.js" type="module"></script> -->
+    <script type="module">
+      import init, {
+        PrivateKey,
+      } from "../node_modules/bsv-wasm-web/bsv_wasm.js";
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        console.log("DOM loaded");
+
+        await init();
+
+        // generate a key
+
+        const jsonInput = document.querySelector("#jsonInput");
+        const json = JSON.parse(jsonInput.value);
+
+        let pay = getPay();
+        json.pay = pay;
+        jsonInput.value = JSON.stringify(json, null, 2);
+        // const debug = document.querySelector(".debug");
+        // debug.innerText = key.to_wif();
+      });
+
+      function updatePay() {
+        const jsonInput = document.querySelector("#jsonInput");
+        const json = JSON.parse(jsonInput.value);
+        localStorage.setItem("transactionous-pay", JSON.stringify(json.pay));
+      }
+
+      function getPay() {
+        let storagePay = localStorage.getItem("transactionous-pay");
+        let pay;
+        if (storagePay) {
+          pay = JSON.parse(storagePay);
+        } else {
+          let key = PrivateKey.from_random();
+          pay = [{ key: key.to_wif() }];
+          localStorage.setItem("transactionous-pay", JSON.stringify(pay));
+        }
+        return pay;
+      }
+    </script>
+  </body>
+</html>
