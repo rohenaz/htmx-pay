@@ -8,7 +8,7 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { BAP_PREFIX, B_PREFIX, MAP_PREFIX } from "./constants.js";
 import { createTransaction, signTransaction } from "./transaction.js";
-import { fetchUtxos, getRawTransaction } from "./txo.js";
+import { fetchOrdUtxos, fetchUtxos, getRawTransaction } from "./txo.js";
 
 const app = express();
 
@@ -31,11 +31,22 @@ app.get("/", (req, res) => {
 
 app.post("/transaction/sign", async (req, res) => {
   console.log(req.body);
+  if (!req.body.transaction) {
+    res.header("HX-Trigger", "no-transaction")
+    res.status(400).send("No transaction provided");
+    return;
+  }
+  try {
+  const data = JSON.parse(req.body.jsonData)
+  if (!data?.sign?.length) {
+    res.header("HX-Trigger", "no-signing-key")
+    res.status(400).send("No signing key provided");
+    return;
+  }
   const tx = Transaction.from_hex(req.body.transaction);
   const privateKey = PrivateKey.from_wif(
-    JSON.parse(req.body.jsonData).sign[0].key
+    data.sign[0].key
   );
-  try {
     const signedTxHex = await signTransaction({
       algo: "sigma",
       key: privateKey,
@@ -58,17 +69,17 @@ app.post("/transaction/decode", async (req, res) => {
 
   const tx = Transaction.from_hex(req.body.transaction);
 
-  // decode using https://b.map.sv/tx/<txid>/bmap
-
   const bmap = await TransformTx(tx.to_hex(), supportedProtocols);
 
   try {
-    res.send(bmap);
+    res.header("Content-Type", "text/plain")
+    res.send(JSON.stringify(bmap, null, 2));
   } catch (e) {
     console.error("Error parsing JSON: ", e);
     res.status(500).send("Error parsing JSON: ", e);
   }
 });
+
 // templates replace the data key
 app.post("/template/:name", async (req, res) => {
   console.log(req.params, req.body);
@@ -84,6 +95,7 @@ app.post("/template/:name", async (req, res) => {
         "3SyWUZXvhidNcEHbAC3HkBnKoD2Q",
         "1K4c6YXR1ixNLAqrL8nx5HUQAPKbACTwDo",
       ];
+      res.header("HX-Trigger", "template-bid-selected");
       break;
     case "post":
       data = [
@@ -115,26 +127,62 @@ app.post("/template/:name", async (req, res) => {
         "message",
       ];
       break;
+      case "define-func":
+
+      data = [
+        MAP_PREFIX,
+        "SET",
+        "app",
+        "htmx-pay",
+        "type",
+        "func-def",
+        "name",
+        "myFunction",
+        "price",
+        "1000",
+        "trigger",
+        "@myFunction"];
+
+      break;
+      case "call-func":
+        data = [
+          MAP_PREFIX,
+          "SET",
+          "app",
+          "htmx-pay",
+          "type",
+          "func-call",
+          "name",
+          "myFunction",
+          "trigger",
+          "@myFunction"];
+        break;
     default:
       data = [];
   }
   // set text content type
   res.setHeader("Content-Type", "text/plain");
-  res.send(`<textarea
-    class="border rounded w-full text-sm"
-    id="jsonInput"
+  res.send(`<textarea 
+  class="w-full bg-transparent text-sm outline-none"
+  id="jsonInput"
     name="jsonData"
-        rows="10"
+        rows="16"
       >${JSON.stringify({ pay, sign, data }, null, 2)}</textarea>`);
 });
 
 app.post("/transaction/create", async (req, res) => {
   console.log(req.body);
-  let { data, pay, sign } = JSON.parse(req.body.jsonData);
+  let data, pay, sign = {}
+  try {
+    ({ data, pay, sign } = JSON.parse(req.body.jsonData));
+  } catch (e) {
+    res.header("HX-Trigger", "bad-data")
+    return res.status(400).send();
+  }
   try {
     const tx = createTransaction(data);
-
-    res.send(tx.to_hex());
+    res.header("HX-Trigger", "trans");
+    return res.send(tx.to_hex());
   } catch (e) {
     console.error("Error parsing JSON: ", e);
   }
@@ -150,27 +198,50 @@ app.post("/txo/unspent", async (req, res) => {
   );
 
   try {
-    let u = await fetchUtxos(address.to_string());
-    console.log("got utxos: ", utxos);
-    if (u && u.length > 0) {
-      utxos = u.map((utxo) => ({
-        ...utxo,
-        selected: false,
-      }));
-    }
+    let u = (await fetchUtxos(address.to_string()) || []);
 
-    // const utxoElement = document.querySelector('#utxos');
-    const html = u
+    utxos = u.map((utxo) => ({
+      ...utxo,
+      selected: false,
+    }));
+
+    let ords = (await fetchOrdUtxos(address.to_string())) || [];
+
+    ords = ords.map((utxo) => ({
+      tx_hash: utxo.txid,
+      tx_pos: utxo.vout,
+      selected: false,
+    }));
+
+    console.log("got utxos: ", { utxos, ords });
+    
+    // Set response triggers
+    let headers = [];
+    // transition to utxo section
+    if (u.length || ords.length) {
+      headers.push('trans-utxo')
+    }
+    // show ordinals detected modal
+    if (ords.length) {
+      headers.push('ordinals-found')
+    }
+    // show no utxos modal
+    if (!u.length) {
+      headers.push('no-utxos')
+    }
+    res.header("HX-Trigger", headers.join(', '));
+
+    const html = u.concat(ords)
       .map((utxo) => {
-        // this needs to be a checkbox
-        return `<div class="flex items-center gap-2"><input type="checkbox" name="utxo" ${
-          utxo.selected ? "checked" : ""
-        } value="${utxo.tx_hash}:${utxo.tx_pos}">${utxo.tx_hash}:${
-          utxo.tx_pos
-        } ${utxo.value} sat</div>`;
+        return `<div class="form-control">
+                <label class="label cursor-pointer">
+                  <span class="label-text text-neutral-content">${utxo.tx_hash}:${utxo.tx_pos} sat</span> 
+                  <input name="utxo" type="checkbox" ${utxo.selected ? "checked" : ""} class="checkbox checkbox-neutral" value="${utxo.tx_hash}:${utxo.tx_pos}" />
+                </label>
+              </div>`;
       })
       .join("");
-    res.send(html);
+    res.send(`<div class="grid gap-2">${html}</div>`);
   } catch (e) {
     console.error("Error parsing JSON: ", e);
     res.status(500).send("Error parsing JSON: ", e);
@@ -237,6 +308,7 @@ app.post("/txo/select", async (req, res) => {
   console.log(
     `Constructed transaction with ${tx.get_ninputs()} inputs and ${tx.get_noutputs()} outputs`
   );
+  res.header("HX-Trigger", "trans-sign");
   res.send(tx.to_hex());
 });
 

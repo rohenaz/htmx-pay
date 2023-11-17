@@ -2,151 +2,422 @@
 <html>
   <head>
     <title>BSV Transaction Creator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
     <script src="https://unpkg.com/datapay"></script>
     <script src="./databutton.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.3.1/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org"></script>
   </head>
-  <body>
-    <main class="p-12">
-      <h1 class="text-3xl font-semibold">Transactionous <sup>Prime</sup></h1>
-      <h2 class="text-xl font-semibold">Choose a Transaction Template</h2>
+  <body class="relative">
+    <div class="fixed top-0 right-0 mt-12 mr-12">
+          <div class="dropdown mb-72">
+      <label tabindex="0" class="btn m-1">
+        Theme
+        <svg
+          width="12px"
+          height="12px"
+          class="h-2 w-2 fill-current opacity-60 inline-block"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 2048 2048"
+        >
+          <path
+            d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"
+          ></path>
+        </svg>
+      </label>
+      <ul
+        tabindex="0"
+        class="dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52"
+      >
+        <li>
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+            aria-label="Default"
+            value="default"
+          />
+        </li>
+        <li>
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+            aria-label="Coffee"
+            value="coffee"
+          />
+        </li>
+        <li>
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+            aria-label="Dim"
+            value="dim"
+          />
+        </li>
+        <li>
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+            aria-label="Forest"
+            value="forest"
+          />
+        </li>
+        <li>
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+            aria-label="Cyberpunk"
+            value="cyberpunk"
+          />
+        </li>
+        <li>
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+            aria-label="Aqua"
+            value="aqua"
+          />
+        </li>
+      </ul>
+    </div>
+    </div>
 
-      <div class="flex items-center gap-2 text-sm my-2">
-        <button
-          id="template-post"
-          class="rounded bg-black text-white px-3 cursor-pointer"
-          hx-post="/template/post"
-          hx-target="#jsonInput"
-          hx-trigger="click"
-          hx-include="#jsonInput"
-          hx-swap="outerHTML"
-        >
-          MAP Post
-        </button>
-        <button
-          id="template-message"
-          class="rounded bg-black text-white px-3 cursor-pointer"
-          hx-post="/template/message"
-          hx-target="#jsonInput"
-          hx-swap="outerHTML"
-          hx-trigger="click"
-          hx-include="#jsonInput"
-        >
-          MAP Message
-        </button>
-        <button
-          id="template-bid"
-          class="rounded bg-black text-white px-3 cursor-pointer"
-          hx-post="/template/bid"
-          hx-target="#jsonInput"
-          hx-trigger="click"
-          hx-include="#jsonInput"
-          hx-swap="outerHTML"
-        >
-          BAP Identity
-        </button>
-      </div>
-      <h3 class="text-[#aaa]">or create one from scratch</h3>
-      <form>
-        <textarea
-          class="border rounded w-full text-sm"
-          id="jsonInput"
-          name="jsonData"
-          rows="10"
-        >
-        {"data": [], "pay": [], "sign": []}</textarea
-        >
-        <button
-          id="createTransaction"
-          class="rounded bg-black text-white px-3 cursor-pointer"
-          hx-post="/transaction/create"
-          hx-target="#transaction"
-        >
-          Create Transaction
-        </button>
-      </form>
-    </main>
+    <section
+      class="py-12 h-screen max-w-4xl mx-auto"
+      hx-on:trans="document.getElementById('transaction-page').scrollIntoView({behavior: 'smooth'});"
+      hx-trigger="trans from:body"
+    >
+      <h1 class="text-5xl font-semibold text-center relative my-8">
+        Transactionous <sup class="text-lg -mt-2 absolute text-accent">Prime</sup>
+      </h1>
 
-    <section class="p-12">
-      <h2 class="text-xl font-semibold">Transaction</h2>
-      <div
-        id="transaction"
-        class="border rounded p-4 my-2 text-sm overflow-auto"
-      >
-        Create a Transaction First
+      <div class="card w-full bg-neutral text-neutral-content">
+        <div class="card-body">
+          <h2 class="card-title">1. Choose a Transaction Template</h2>
+
+          <ul class="menu menu-horizontal bg-base-200 rounded-box my-2">
+            <li>
+              <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
+                class="hover:text-accent"
+                hx-post="/template/post"
+                hx-target="#jsonInput"
+                hx-trigger="click"
+                hx-include="#jsonInput"
+                hx-swap="outerHTML transition:true"
+                >Post</a
+              >
+            </li>
+            <li>
+              <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
+                class="hover:text-accent"
+                hx-post="/template/message"
+                hx-target="#jsonInput"
+                hx-swap="outerHTML transition:true"
+                hx-trigger="click"
+                hx-include="#jsonInput"
+                >Message</a
+              >
+            </li>
+            <li>
+              <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
+                class="hover:text-accent"
+                hx-post="/template/bid"
+                hx-target="#jsonInput"
+                hx-trigger="click"
+                hx-include="#jsonInput"
+                hx-swap="outerHTML transition:true"
+                >ID</a
+              >
+            </li>
+            <li>
+              <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
+                class="hover:text-accent"
+                hx-post="/template/define-func"
+                hx-target="#jsonInput"
+                hx-trigger="click"
+                hx-include="#jsonInput"
+                hx-swap="outerHTML transition:true"
+                >Func</a
+              >
+            </li>
+            <li>
+              <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
+                class="hover:text-accent"
+                id="template-call-func"
+                hx-post="/template/call-func"
+                hx-target="#jsonInput"
+                hx-trigger="click"
+                hx-include="#jsonInput"
+                hx-swap="outerHTML transition:true"
+                >Call</a
+              >
+            </li>
+          </ul>
+
+          <form>
+            <div class="mockup-code">
+              <pre><code><textarea
+                class="w-full bg-transparent text-sm outline-none"
+                id="jsonInput"
+                name="jsonData"
+                rows="10"
+              >
+              {"data": [], "pay": [], "sign": []}</textarea
+              ></code></pre>
+            </div>
+            
+
+            <div class="card-actions justify-end">
+              <button
+                id="createTransaction"
+                class="btn"
+                hx-post="/transaction/create"
+                hx-target="#transaction"
+              >
+                Create Transaction
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      <button
-        id="fetchUtxos"
-        hx-post="/txo/unspent"
-        hx-target="#utxos"
-        hx-include="#jsonInput"
-        hx-trigger="click"
-        class="rounded bg-black text-white px-3 cursor-pointer"
-      >
-        Get UTXOs
-      </button>
     </section>
-    <section class="p-12">
-      <h2 class="text-xl font-semibold">UTXOS</h2>
-      <div id="utxos" class="border rounded p-4 my-2 text-sm">
-        Choose a template first
+
+    <section
+      id="transaction-page"
+      class="h-screen py-12 max-w-4xl mx-auto"
+      hx-on:trans-utxo="document.getElementById('utxos-page').scrollIntoView({behavior: 'smooth'});"
+      hx-trigger="trans-utxo from:body"
+    >
+
+      <div class="card w-full bg-neutral text-neutral-content mb-12">
+        <div class="card-body">
+          <h2 class="card-title">Your Transaction So Far...</h2>
+          <div class="mockup-code bg-secondary text-secondary-content pl-4">
+            <pre><code id="transaction" class="whitespace-break-spaces break-all">no transaction generated</code></pre>
+          </div>
+        </div>
+      </div>  
+      
+      <div class="card w-full bg-neutral text-neutral-content">
+        <div class="card-body">
+          <h2 class="card-title">2. Fetch Unspent Transactions</h2>
+
+          <p>To add some inputs to your tx, lets get the unspent outputs for the address associated with your key.</p>
+
+          <br />
+          <div class="card-actions justify-end">
+            <button
+              id="fetchUtxos"
+              hx-post="/txo/unspent"
+              hx-target="#utxos"
+              hx-include="#jsonInput"
+              hx-indicator="#spinner"
+              hx-trigger="trans from:body"
+              class="btn"
+            >
+              Get UTXOs <span id="spinner" class="spinner animate-spin">
+                <svg viewBox="0 0 50 50">
+                  <circle
+                    cx="25"
+                    cy="25"
+                    r="20"
+                    fill="none"
+                    stroke-width="5"
+                  ></circle>
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
-      <button
-        id="selectUtxos"
-        hx-post="/txo/select"
-        hx-target="#signedTx"
-        hx-vals="js:{ transaction: document.getElementById('transaction').innerText }"
-        hx-include="#utxos"
-        hx-trigger="click"
-        class="rounded bg-black text-white px-3 cursor-pointer"
-      >
-        Select Transaction Inputs
-      </button>
     </section>
-    <section class="p-12">
-      <h2 class="text-xl font-semibold">Identity Signatures</h2>
-      <div id="signedTx" class="border rounded p-4 my-2 text-sm overflow-auto">
-        Select UTXOs first
-      </div>
-      <button
-        id="signTransaction"
-        hx-post="/transaction/sign"
-        hx-target="#signedTx"
-        hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
-        hx-include="#jsonInput"
-        class="rounded bg-black text-white px-3 cursor-pointer"
-      >
-        Sign Transaction
-      </button>
-    </section>
-    <section class="p-12">
-      <h2 class="text-xl font-semibold">BMAP Result</h2>
-      <div id="result" class="border rounded p-4 my-2 text-sm" hx-trigger="decode from:body" hx-post="/transaction/decode" hx-swap="innerText" hx-include="#signedTx" hx-on:decode="console.log('decoding!')" hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
-      >
-        Sign Transaction First
+    <section
+      id="utxos-page"
+      class="py-12 h-screen max-w-4xl mx-auto"
+      hx-on:trans-sign="document.getElementById('sign-page').scrollIntoView({behavior: 'smooth'});"
+    >
+      <div class="card w-full bg-neutral text-neutral-content">
+        <div class="card-body">
+          <h2 class="card-title">3. Select Transaction Inputs</h2>
+          <div id="utxos" class="max-h-[75dvh] overflow-auto bg-neutral"></div>
+          <div class="card-actions justify-end">
+            <button
+              id="selectUtxos"
+              hx-post="/txo/select"
+              hx-target="#signedTx"
+              hx-vals="js:{ transaction: document.getElementById('transaction').innerText }"
+              hx-include="#utxos"
+              hx-trigger="click"
+              class="btn"
+            >
+              Add Inputs
+            </button>
+          </div>
+        </div>
       </div>
     </section>
-    <section class="p-12">
-      <h2 class="text-xl font-semibold">Broadcast</h2>
-      <div id="transaction3" class="border rounded p-4 my-2 text-sm">
-        Sign Transaction First
+    <section
+      id="sign-page"
+      class="max-w-4xl mx-auto h-screen py-12"
+      hx-on:decode="document.getElementById('decode-page').scrollIntoView({behavior: 'smooth'});"
+    >
+
+    <div class="card w-full bg-neutral text-neutral-content mb-12">
+      <div class="card-body">
+        <h2 class="card-title">Your Transaction So Far...</h2>
+        
+        <div class="mockup-code bg-secondary text-secondary-content pl-4">
+          <pre><code id="signedTx" class="whitespace-break-spaces break-all">no transaction generated</code></pre>
+
+       </div> 
+  </div>
+      <div class="card w-full bg-neutral text-neutral-content">
+        <div class="card-body">
+          <h2 class="card-title">4. Identity Signatures</h2>
+          <p>Sign the transaction with a Sigma identity key. This will use the `key` from `sign`.</p>
+          <div class="card-actions justify-end">
+            <button
+              id="skipSign"
+              hx-trigger="click"
+              hx-on:decode="document.getElementById('decode-page').scrollIntoView({behavior: 'smooth'});"
+              onclick="javascript:htmx.trigger('#skipSign', 'decode');"
+              class="btn"
+            >
+              Skip
+            </button>
+            <button
+              id="signTransaction"
+              hx-post="/transaction/sign"
+              hx-target="#signedTx"
+              hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
+              hx-include="#jsonInput"
+              class="btn"
+            >
+              Sign Transaction
+            </button>
+          </div>
+        </div>
       </div>
-      <button
-        id="fetchUtxos"
-        class="rounded bg-black text-white px-3 cursor-pointer"
-      >
-        Broadcast
-      </button>
     </section>
-    <section class="p-12 flex">
-      <h2 class="text-xl font-semibold">Debug</h2>
-      <div
-        class="debug mx-auto rounded text-xs p-4 bg-black/10 max-w-xl overflow-auto"
-      ></div>
+    <section id="decode-page" class="py-12 h-screen max-w-4xl mx-auto">
+      <div class="card w-full bg-neutral text-neutral-content">
+        <div class="card-body">
+          <h2 class="card-title">Decoded Preview</h2>
+          <code
+          class="whitespace-pre-wrap textarea rounded p-4 my-2 text-sm overflow-x-auto"
+            id="result"
+            hx-trigger="decode from:body"
+            hx-post="/transaction/decode"
+            hx-swap="innerText"
+            hx-include="#signedTx"
+            hx-on:decode="console.log('decoding!')"
+            hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
+          >
+            Sign Transaction First
+          </code>
+          <div class="card-actions justify-end">
+            <button
+              id="broadcast"
+              class="btn"
+              hx-post="/transaction/broadcast"
+              hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
+              hx-include="#jsonInput"
+              hx-trigger="click"
+            >
+              Broadcast
+            </button>
+        </div>
+      </div>
     </section>
-    <!-- <script src="./script.js" type="module"></script> -->
+
+    <dialog id="bap_template_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">BAP ID Selected</h3>
+        <p class="py-4">To create a BAP ID we must generate a master key and derive a signing key.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn bg-secondary">Cancel</button>
+            <button class="btn bg-primary">OK</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="no_utxos_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">No Utxos Found!</h3>
+        <p class="py-4">Try using a different 'pay' key. Only standard P2PKH outputs will be returned by the API.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn bg-primary">OK</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="ordinals_found_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Ordinals Found!</h3>
+        <p class="py-4">Spending UTXOs from this key will spend your ordinals! If this is not what you intended to do, try using a different 'pay' key.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn bg-primary">OK</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="no_signing_key_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">No Signing Key Provided</h3>
+        <p class="py-4">Try adding a valid 'sign' key to the datapay object.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn bg-primary">OK</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+    
+    <dialog id="no_transaction_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">No Transaction!</h3>
+        <p class="py-4">Generate a transaction first..</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn bg-primary">OK</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="bad-data" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Invalid JSON</h3>
+        <p class="py-4">The transaction template failed to parse. Input must be a valid JSON object.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn bg-primary">OK</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
     <script type="module">
       import init, {
         PrivateKey,
@@ -158,15 +429,12 @@
         await init();
 
         // generate a key
-
         const jsonInput = document.querySelector("#jsonInput");
         const json = JSON.parse(jsonInput.value);
 
         let pay = getPay();
         json.pay = pay;
         jsonInput.value = JSON.stringify(json, null, 2);
-        // const debug = document.querySelector(".debug");
-        // debug.innerText = key.to_wif();
       });
 
       function updatePay() {
@@ -187,6 +455,31 @@
         }
         return pay;
       }
+
+      document.addEventListener('no-utxos', function (event) {
+        document.getElementById('no_utxos_modal').showModal();
+      });
+
+      document.addEventListener('template-bid-selected', function (event) {
+        document.getElementById('bap_template_modal').showModal();
+      });
+
+      document.addEventListener('ordinals-found', function (event) {
+        document.getElementById('ordinals_found_modal').showModal();
+      });
+
+      document.addEventListener('no-signing-key', function (event) {
+        document.getElementById('no_signing_key_modal').showModal();
+      });
+
+      document.addEventListener('no-transaction', function (event) {
+        document.getElementById('no_transaction_modal').showModal();
+      });
+
+      document.addEventListener('bad-data', function (event) {
+        document.getElementById('bad-data').showModal();
+      });
+
     </script>
   </body>
 </html>
