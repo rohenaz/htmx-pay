@@ -6,8 +6,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave&display=swap" rel="stylesheet">
-    <script src="../node_modules/@tailw"></script>
+    <!-- compiled tailwind styles-->
     <link href="../dist/output.css" rel="stylesheet">
+
     <style type="text/css">
       html {
         height: 100vh;
@@ -423,11 +424,12 @@
       <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg">BAP ID Selected</h3>
         <p class="py-4 text-base-content">To create a BAP ID we must generate a master key and derive an active signing key to use.</p>
+        <div id="bid-backup"></div>
         <div class="w-full">
           <button
             id="generateMasterKey"
             class="btn bg-primary/75 text-primary-content hover:bg-primary"
-            hx-post="/bap/generate-master-key"
+            hx-post="/bap/generate"
             hx-target="#jsonInput"
             hx-trigger="click"
             hx-include="#jsonInput"
@@ -522,6 +524,7 @@
       import init, {
         PrivateKey,
       } from "../node_modules/bsv-wasm-web/bsv_wasm.js";
+      import "../node_modules/theme-change/index.js";
 
       document.addEventListener("DOMContentLoaded", async () => {
         console.log("DOM loaded");

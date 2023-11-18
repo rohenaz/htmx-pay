@@ -1301,9 +1301,9 @@
     pretty-format "^29.0.0"
 
 "@types/node@*":
-  version "20.9.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.9.0.tgz#bfcdc230583aeb891cf51e73cfdaacdd8deae298"
-  integrity sha512-nekiGu2NDb1BcVofVcEKMIwzlx4NjHlcjhoxxKBNLtz15Y1z7MYf549DFvkHSId02Ax6kGwWntIBPC3l/JZcmw==
+  version "20.9.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.9.1.tgz#9d578c610ce1e984adda087f685ace940954fe19"
+  integrity sha512-HhmzZh5LSJNS5O8jQKpJ/3ZcrrlG6L70hpGqMIAoM9YVD0YBRNWYsfwcXq8VnSjlNpCpgLzMXdiPo+dxcvSmiA==
   dependencies:
     undici-types "~5.26.4"
 
@@ -1633,6 +1633,13 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
+bitcoin-bap@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/bitcoin-bap/-/bitcoin-bap-1.3.1.tgz#02444fce613614bc8c4b1b0a2410d9b6caf38f05"
+  integrity sha512-z7C7+AVXzcTxEv4ar+kjjRRuLjPEcl44+HjatmVWbs58lYBY/Kd++yMUe7JfCU45I76CyCVam8lSENVvDeLJ6A==
+  dependencies:
+    node-fetch "^2.6.1"
+
 bitcoin-elliptic@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/bitcoin-elliptic/-/bitcoin-elliptic-7.0.1.tgz#bbdcddea28cdbbd5316c012374764d383ac59e69"
@@ -1672,7 +1679,7 @@ bitcore-lib@^0.13.7:
     inherits "=2.0.1"
     lodash "=3.10.1"
 
-bmapjs@^0.4.0-beta.42:
+bmapjs@^0.4.0-beta.36:
   version "0.4.0-beta.42"
   resolved "https://registry.yarnpkg.com/bmapjs/-/bmapjs-0.4.0-beta.42.tgz#d112549351868e6e3315d6cee43d40cf1a20e40e"
   integrity sha512-0czRCfeRu/bImaeJdgg7/bu6c/HqjcIm6le9x2dupCszp/tB7UNuUVpJ9OF78MdggqktbCRHnXWf3Ez2DbE65A==
@@ -1689,6 +1696,11 @@ bn.js@=2.0.4:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-2.0.4.tgz#220a7cd677f7f1bfa93627ff4193776fe7819480"
   integrity sha512-agol6nELIIhWUdrrb0ko6X/ojICxfDeUg+NUCODLS4Dn3deKCE+d1HTEjvlD/WfH6rZ1DCh7bA21tHNtmqwjWA==
 
+bn.js@=4.11.8:
+  version "4.11.8"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
+  integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
+
 bn.js@=4.11.9:
   version "4.11.9"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.9.tgz#26d556829458f9d1e81fc48952493d0ba3507828"
@@ -1699,7 +1711,7 @@ bn.js@^2.0.0:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-2.2.0.tgz#12162bc2ae71fc40a5626c33438f3a875cd37625"
   integrity sha512-nlotTGN6qr+NpeCb8d5mdXR47r6GXiyoX4fEeqBF2u9wp/3XgzIwyftMX9TE+StQRJSOUJtyYr9MVk0rn2ftAg==
 
-bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9:
+bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9, bn.js@^4.4.0:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
   integrity sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==
@@ -1898,6 +1910,20 @@ bsv-wasm@^2.0.1, bsv-wasm@^2.0.2:
   resolved "https://registry.yarnpkg.com/bsv-wasm/-/bsv-wasm-2.0.2.tgz#b8d7cf727be3fead9479602a308b5c49f3c743b7"
   integrity sha512-MYMFZw4j3SwSkmL+pe4sbkV9+7Gey156Gk/Vuqk567kIkejIttPCV/Z9b07QThSUdmb35yS+hZgcA5dqvWwtpw==
 
+bsv@1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/bsv/-/bsv-1.5.4.tgz#3b3cb6985a2a4aecbe5864b3521223ac0d6d0f66"
+  integrity sha512-CQVMS1jYveYbeq9Qdh5wXYq0Os3yduh7P+30d4oyHOMermiupbwR4IfBs2nfJEzaLxGjwNx4E4Z1rUYguZFRLw==
+  dependencies:
+    aes-js "^3.1.2"
+    bn.js "=4.11.8"
+    bs58 "=4.0.1"
+    clone-deep "^4.0.1"
+    elliptic "6.5.3"
+    hash.js "^1.1.7"
+    inherits "2.0.3"
+    unorm "1.4.1"
+
 bsv@2.0.7:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/bsv/-/bsv-2.0.7.tgz#beed919d220012737653acdd34e0c24df009f359"
@@ -2008,9 +2034,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001538, caniuse-lite@^1.0.30001541:
-  version "1.0.30001562"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001562.tgz#9d16c5fd7e9c592c4cd5e304bc0f75b0008b2759"
-  integrity sha512-kfte3Hym//51EdX4239i+Rmp20EsLIYGdPkERegTgU19hQWCRhsRFGKHTliUlsry53tv17K7n077Kqa0WJU4ng==
+  version "1.0.30001563"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001563.tgz#aa68a64188903e98f36eb9c56e48fba0c1fe2a32"
+  integrity sha512-na2WUmOxnwIZtwnFI2CZ/3er0wdNzU7hN+cPYz/z2ajHThnkWjNBOpEPP4n+4r2WPM847JaMotaJE3bnfzjyKw==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -2398,9 +2424,9 @@ culori@^3:
   integrity sha512-HIEbTSP7vs1mPq/2P9In6QyFE0Tkpevh0k9a+FkjhD+cwsYm9WRSbn4uMdW9O0yXlNYC3ppxL3gWWPOcvEl57w==
 
 daisyui@^4.4.1:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-4.4.1.tgz#4d48790c5f148f065e2cbbebe8d4aa9588f80cc2"
-  integrity sha512-o8rBsipLmN9PnpDcVE6EUVvivGicyjdsG7Ymd8r4atpu5VhdItcilaO/pGCE5aZpmEJ11GeOGH3733Y8M8dhYQ==
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-4.4.2.tgz#669ee310be42894abe36d493635000d010fa4023"
+  integrity sha512-Ecg5loskj9dkaAnTSK5Xn5jb24TqDlQIg/NJ025jCkw2S/zw12btjvLgY2Sv5Ws1DFVoVBRs3XYXyojZG7zVnw==
   dependencies:
     css-selector-tokenizer "^0.8"
     culori "^3"
@@ -2598,9 +2624,22 @@ ejs@^3.1.6:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.535:
-  version "1.4.585"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.585.tgz#7b3cb6846bb5cc10a8d5904c351a9b8aaa76ea90"
-  integrity sha512-B4yBlX0azdA3rVMxpYwLQfDpdwOgcnLCkpvSOd68iFmeedo+WYjaBJS3/W58LVD8CB2nf+o7C4K9xz1l09RkWg==
+  version "1.4.588"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.588.tgz#d553f3c008e73488fb181fdf2601fdb0b1ffbb78"
+  integrity sha512-soytjxwbgcCu7nh5Pf4S2/4wa6UIu+A3p03U2yVr53qGxi1/VTR3ENI+p50v+UxqqZAfl48j3z55ud7VHIOr9w==
+
+elliptic@6.5.3:
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.3.tgz#cb59eb2efdaf73a0bd78ccd7015a62ad6e0f93d6"
+  integrity sha512-IMqzv5wNQf+E6aHeIqATs0tOLeOTwj1QKbRcS3jBbYkl5oLAserA8yJTT7/VyHUYG91PRmPyeQDObKLPpeS4dw==
+  dependencies:
+    bn.js "^4.4.0"
+    brorand "^1.0.1"
+    hash.js "^1.0.0"
+    hmac-drbg "^1.0.0"
+    inherits "^2.0.1"
+    minimalistic-assert "^1.0.0"
+    minimalistic-crypto-utils "^1.0.0"
 
 elliptic@6.5.4, elliptic@^6.5.3, elliptic@^6.5.4:
   version "6.5.4"
@@ -5462,6 +5501,11 @@ terser@^5.0.0, terser@^5.7.0:
     acorn "^8.8.2"
     commander "^2.20.0"
     source-map-support "~0.5.20"
+
+theme-change@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/theme-change/-/theme-change-2.5.0.tgz#d3b064af9c4cd01ab16ce0a4ecb251c827a50e68"
+  integrity sha512-B/UdsgdHAGhSKHTAQnxg/etN0RaMDpehuJmZIjLMDVJ6DGIliRHGD6pODi1CXLQAN9GV0GSyB3G6yCuK05PkPQ==
 
 thenify-all@^1.0.0:
   version "1.6.0"

@@ -2,7 +2,15 @@
 import bmap from "bmapjs";
 const { TransformTx, supportedProtocols } = bmap;
 
-import { P2PKHAddress, PrivateKey, Transaction, TxIn, TxOut } from "bsv-wasm";
+import { BAP } from "bitcoin-bap";
+import {
+  ExtendedPrivateKey,
+  P2PKHAddress,
+  PrivateKey,
+  Transaction,
+  TxIn,
+  TxOut,
+} from "bsv-wasm";
 import express from "express";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -36,21 +44,19 @@ app.get("/fonts/:font", (req, res) => {
 app.post("/transaction/sign", async (req, res) => {
   console.log(req.body);
   if (!req.body.transaction) {
-    res.header("HX-Trigger", "no-transaction")
+    res.header("HX-Trigger", "no-transaction");
     res.status(400).send("No transaction provided");
     return;
   }
   try {
-  const data = JSON.parse(req.body.jsonData)
-  if (!data?.sign?.length) {
-    res.header("HX-Trigger", "no-signing-key")
-    res.status(400).send("No signing key provided");
-    return;
-  }
-  const tx = Transaction.from_hex(req.body.transaction);
-  const privateKey = PrivateKey.from_wif(
-    data.sign[0].key
-  );
+    const data = JSON.parse(req.body.jsonData);
+    if (!data?.sign?.length) {
+      res.header("HX-Trigger", "no-signing-key");
+      res.status(400).send("No signing key provided");
+      return;
+    }
+    const tx = Transaction.from_hex(req.body.transaction);
+    const privateKey = PrivateKey.from_wif(data.sign[0].key);
     const signedTxHex = await signTransaction({
       algo: "sigma",
       key: privateKey,
@@ -76,7 +82,7 @@ app.post("/transaction/decode", async (req, res) => {
   const bmap = await TransformTx(tx.to_hex(), supportedProtocols);
 
   try {
-    res.header("Content-Type", "text/plain")
+    res.header("Content-Type", "text/plain");
     res.send(JSON.stringify(bmap, null, 2));
   } catch (e) {
     console.error("Error parsing JSON: ", e);
@@ -131,8 +137,7 @@ app.post("/template/:name", async (req, res) => {
         "message",
       ];
       break;
-      case "define-func":
-
+    case "define-func":
       data = [
         MAP_PREFIX,
         "SET",
@@ -145,22 +150,24 @@ app.post("/template/:name", async (req, res) => {
         "price",
         "1000",
         "trigger",
-        "@myFunction"];
+        "@myFunction",
+      ];
 
       break;
-      case "call-func":
-        data = [
-          MAP_PREFIX,
-          "SET",
-          "app",
-          "htmx-pay",
-          "type",
-          "func-call",
-          "name",
-          "myFunction",
-          "trigger",
-          "@myFunction"];
-        break;
+    case "call-func":
+      data = [
+        MAP_PREFIX,
+        "SET",
+        "app",
+        "htmx-pay",
+        "type",
+        "func-call",
+        "name",
+        "myFunction",
+        "trigger",
+        "@myFunction",
+      ];
+      break;
     default:
       data = [];
   }
@@ -174,13 +181,64 @@ app.post("/template/:name", async (req, res) => {
       >${JSON.stringify({ pay, sign, data }, null, 2)}</textarea>`);
 });
 
+app.post("/bap/generate", async (req, res) => {
+
+  // generate a handom hd key
+  const hdPrivateKey = ExtendedPrivateKey.from_random();
+  const bap = new BAP(hdPrivateKey.to_string());
+  // Create a new identity
+  const newId = bap.newId();
+  // set the name of the ID
+  newId.name = "Frames Jenco";
+
+  // set a description for this ID
+  newId.description = "Pseudonymous identity for Jamify and the Jenco bot";
+
+  // set identity attributes
+  newId.addAttribute("name", "Frames Jenco");
+  newId.addAttribute("email", "frames@jamify.xyz");
+  newId.addAttribute("paymail", "framesjenco@relayx.io");
+
+  // export the identities for storage
+  const encryptedExport = bap.exportIds();
+  // const currentAddress = newId.getCurrentAddress();
+  // const idKey = newId.getIdentityKey();
+  const newData = newId.getInitialIdTransaction()
+
+  // parse jsonInput 
+  let parsedInput = JSON.parse(req.body.jsonData);
+  parsedInput.data = newData.map((d, idx) => idx === newData.length - 1 ? `0x${d}` : Buffer.from(d, 'hex').toString());
+  // const signingKeys = await newId.getIdSigningKeys()
+
+const signingKey = hdPrivateKey.derive_from_path(newId.currentPath).get_private_key().to_wif()
+console.log({signingKey})
+  parsedInput.sign = [{ key: signingKey }]
+  // 
+  // add the id key to the signing keys
+  res.header("Content-Type", "text/plain");
+  // res.send({
+  //   encryptedExport,
+  //   rootKey: hdPrivateKey.to_string(),
+  //   currentAddress,
+  //   idKey: idKey.toString(),
+  //   data: newData,
+  // });
+  
+  const keyBackup = `<div hx-swap-oob="beforeend:#bid-backup">Backup your root key offline: ${hdPrivateKey.to_string()}
+  <h2>Encrypted Backup File</h2>
+  <textarea class="textarea w-full rows="4">${encryptedExport}</textarea></div>`
+  res.send(`<pre>${JSON.stringify(parsedInput, null, 2)}</pre>${keyBackup}`);
+});
+
 app.post("/transaction/create", async (req, res) => {
   console.log(req.body);
-  let data, pay, sign = {}
+  let data,
+    pay,
+    sign = {};
   try {
     ({ data, pay, sign } = JSON.parse(req.body.jsonData));
   } catch (e) {
-    res.header("HX-Trigger", "bad-data")
+    res.header("HX-Trigger", "bad-data");
     return res.status(400).send();
   }
   try {
@@ -202,7 +260,7 @@ app.post("/txo/unspent", async (req, res) => {
   );
 
   try {
-    let u = (await fetchUtxos(address.to_string()) || []);
+    let u = (await fetchUtxos(address.to_string())) || [];
 
     utxos = u.map((utxo) => ({
       ...utxo,
@@ -219,29 +277,36 @@ app.post("/txo/unspent", async (req, res) => {
     }));
 
     console.log("got utxos: ", { utxos, ords });
-    
+
     // Set response triggers
     let headers = [];
     // transition to utxo section
     if (u.length || ords.length) {
-      headers.push('trans-utxo')
+      headers.push("trans-utxo");
     }
     // show ordinals detected modal
     if (ords.length) {
-      headers.push('ordinals-found')
+      headers.push("ordinals-found");
     }
     // show no utxos modal
     if (!u.length) {
-      headers.push('no-utxos')
+      headers.push("no-utxos");
     }
-    res.header("HX-Trigger", headers.join(', '));
+    res.header("HX-Trigger", headers.join(", "));
 
-    const html = u.concat(ords)
+    const html = u
+      .concat(ords)
       .map((utxo) => {
         return `<div class="form-control">
                 <label class="label cursor-pointer">
-                  <span class="label-text text-base-content">${utxo.tx_hash}:${utxo.value} sat</span> 
-                  <input name="utxo" type="checkbox" ${utxo.selected ? "checked" : ""} class="checkbox checkbox-accent" value="${utxo.tx_hash}:${utxo.tx_pos}:${utxo.value}" />
+                  <span class="label-text text-base-content">${utxo.tx_hash}:${
+          utxo.value
+        } sat</span> 
+                  <input name="utxo" type="checkbox" ${
+                    utxo.selected ? "checked" : ""
+                  } class="checkbox checkbox-accent" value="${utxo.tx_hash}:${
+          utxo.tx_pos
+        }:${utxo.value}" />
                 </label>
               </div>`;
       })
@@ -292,11 +357,11 @@ app.post("/txo/select", async (req, res) => {
   let inputTxs = rawTxs.map((rawTx) => Transaction.from_hex(rawTx));
 
   // now add the inputs to the tx
-  let totalInputValue = 0
+  let totalInputValue = 0;
   inputs.forEach((input, index) => {
     let [txid, idx, value] = input.split(":");
 
-    totalInputValue += Number(value)
+    totalInputValue += Number(value);
 
     // find the tx by txid
     let inputTx = inputTxs.find((t) => t.get_id_hex() === txid);
@@ -306,7 +371,7 @@ app.post("/txo/select", async (req, res) => {
     tx.add_input(
       new TxIn(
         Buffer.from(txid, "hex"),
-        parseInt(index),
+        parseInt(idx),
         inputTxOut.get_script_pub_key(),
         Number(inputTxOut.get_satoshis())
       )
@@ -326,7 +391,9 @@ app.post("/txo/select", async (req, res) => {
     console.log("adding change output", change, req.body.jsonData);
     // get change address from pay key
     const address = P2PKHAddress.from_pubkey(
-      PrivateKey.from_wif(JSON.parse(req.body.jsonData).pay[0].key).to_public_key()
+      PrivateKey.from_wif(
+        JSON.parse(req.body.jsonData).pay[0].key
+      ).to_public_key()
     );
     console.log("adding change output", change);
     tx.add_output(new TxOut(change, address.get_locking_script()));
