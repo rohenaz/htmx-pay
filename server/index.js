@@ -240,8 +240,8 @@ app.post("/txo/unspent", async (req, res) => {
       .map((utxo) => {
         return `<div class="form-control">
                 <label class="label cursor-pointer">
-                  <span class="label-text text-neutral-content">${utxo.tx_hash}:${utxo.value} sat</span> 
-                  <input name="utxo" type="checkbox" ${utxo.selected ? "checked" : ""} class="checkbox checkbox-neutral" value="${utxo.tx_hash}:${utxo.tx_pos}:${utxo.value}" />
+                  <span class="label-text text-base-content">${utxo.tx_hash}:${utxo.value} sat</span> 
+                  <input name="utxo" type="checkbox" ${utxo.selected ? "checked" : ""} class="checkbox checkbox-accent" value="${utxo.tx_hash}:${utxo.tx_pos}:${utxo.value}" />
                 </label>
               </div>`;
       })

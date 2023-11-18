@@ -180,10 +180,10 @@
           <h2 class="card-title text-primary">1. Choose a Transaction Template</h2>
           <p class="text-base100-content">Choose which UTXOs to spend. Only standard P2PKH outputs will be returned by the API.</p>
 
-          <ul class="menu menu-horizontal bg-primary/50 text-primary-content rounded-box my-2">
+          <ul class="menu menu-horizontal bg-secondary/75 text-secondary-content rounded-box my-2">
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-primary"
+                class="hover:bg-base-100/10 mr-2"
                 hx-post="/template/post"
                 hx-target="#jsonInput"
                 hx-trigger="click"
@@ -194,7 +194,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-primary"
+                class="hover:bg-base-100/10 mr-2"
                 hx-post="/template/message"
                 hx-target="#jsonInput"
                 hx-swap="outerHTML transition:true"
@@ -205,7 +205,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-primary"
+                class="hover:bg-base-100/10 mr-2"
                 hx-post="/template/bid"
                 hx-target="#jsonInput"
                 hx-trigger="click"
@@ -216,7 +216,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-primary"
+                class="hover:bg-base-100/10 mr-2"
                 hx-post="/template/define-func"
                 hx-target="#jsonInput"
                 hx-trigger="click"
@@ -227,7 +227,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-primary"
+                class="hover:bg-base-100/10 mr-2"
                 id="template-call-func"
                 hx-post="/template/call-func"
                 hx-target="#jsonInput"
@@ -321,10 +321,10 @@
       class="py-12 h-screen max-w-4xl mx-auto"
       hx-on:trans-sign="document.getElementById('sign-page').scrollIntoView({behavior: 'smooth'});"
     >
-      <div class="card w-full  bg-base-200 text-neutral-content">
+      <div class="card w-full bg-base-200 text-neutral-content">
         <div class="card-body">
           <h2 class="card-title text-primary">3. Select Transaction Inputs</h2>
-          <div id="utxos" class="max-h-[75dvh] overflow-auto text-base200-content">No utxos for this 'pay' key.</div>
+          <div id="utxos" class="max-h-[75dvh] overflow-auto bg-base-100/75 text-base-content p-2 rounded-sm">No utxos for this 'pay' key.</div>
           <div class="card-actions justify-end">
             <button
               id="selectUtxos"
@@ -420,17 +420,34 @@
     </section>
 
     <dialog id="bap_template_modal" class="modal">
-      <div class="modal-box">
+      <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg">BAP ID Selected</h3>
-        <p class="py-4 text-base100-content">To create a BAP ID we must generate a master key and derive an active signing key to use.</p>
-        <p class="py-4 text-base100-content">Alternatively, you can upload an identity backup json file. This is not the same as a 1satordinals.com wallet json backup.</p>
+        <p class="py-4 text-base-content">To create a BAP ID we must generate a master key and derive an active signing key to use.</p>
+        <div class="w-full">
+          <button
+            id="generateMasterKey"
+            class="btn bg-primary/75 text-primary-content hover:bg-primary"
+            hx-post="/bap/generate-master-key"
+            hx-target="#jsonInput"
+            hx-trigger="click"
+            hx-include="#jsonInput"
+            hx-swap="outerHTML transition:true">
+            Generate Master Key
+          </button>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <p class="py-4 text-base-content">Alternatively, you can upload an identity backup json file. This is not the same as a 1satordinals.com wallet json backup.</p>
         <div class="w-full">
           <input type="file" class="file-input w-full max-w-xs" />
         </div>
+        <div class="divider"></div> 
+
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn bg-secondary">Cancel</button>
+            <button class="btn bg-secondary/75 text-secondary-content hover:bg-secondary">Cancel</button>
             <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
@@ -438,7 +455,7 @@
     </dialog>
 
     <dialog id="no_utxos_modal" class="modal">
-      <div class="modal-box">
+      <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg text-accent">No Utxos Found!</h3>
         <p class="py-4 text-secondary">Try using a different 'pay' key. Only standard P2PKH outputs will be returned by the API.</p>
         <div class="modal-action">
@@ -451,7 +468,7 @@
     </dialog>
 
     <dialog id="ordinals_found_modal" class="modal">
-      <div class="modal-box">
+      <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg">Ordinals Found!</h3>
         <p class="py-4">Spending UTXOs from this key will spend your ordinals! If this is not what you intended to do, try using a different 'pay' key.</p>
         <div class="modal-action">
@@ -463,7 +480,7 @@
       </div>
     </dialog>
     <dialog id="no_signing_key_modal" class="modal">
-      <div class="modal-box">
+      <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg">No Signing Key Provided</h3>
         <p class="py-4">Try adding a valid 'sign' key to the datapay object.</p>
         <div class="modal-action">
@@ -476,7 +493,7 @@
     </dialog>
     
     <dialog id="no_transaction_modal" class="modal">
-      <div class="modal-box">
+      <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg">No Transaction!</h3>
         <p class="py-4">Generate a transaction first..</p>
         <div class="modal-action">
@@ -489,7 +506,7 @@
     </dialog>
 
     <dialog id="bad-data" class="modal">
-      <div class="modal-box">
+      <div class="modal-box bg-base-100 text-base-content">
         <h3 class="font-bold text-lg">Invalid JSON</h3>
         <p class="py-4">The transaction template failed to parse. Input must be a valid JSON object.</p>
         <div class="modal-action">
