@@ -6,6 +6,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave&display=swap" rel="stylesheet">
+    <script src="../node_modules/@tailw"></script>
+    <link href="../dist/output.css" rel="stylesheet">
     <style type="text/css">
       html {
         height: 100vh;
@@ -46,13 +48,12 @@
       rel="stylesheet"
       type="text/css"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org"></script>
 
   </head>
   <body class="relative">
     <div class="fixed top-0 right-0 mt-12 mr-12">
-          <div class="dropdown mb-72">
+      <div class="dropdown mb-72">
       <label tabindex="0" class="btn m-1">
         Theme
         <svg
@@ -76,9 +77,9 @@
             type="radio"
             name="theme-dropdown"
             class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Default"
-            value="default"
-            data-set-theme="default"
+            aria-label="CyberDark"
+            value="cyberdark"
+            data-set-theme="cyberdark"
           />
         </li>
         <li>
@@ -146,16 +147,6 @@
             type="radio"
             name="theme-dropdown"
             class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Dark"
-            value="dark"
-            data-set-theme="dark"
-          />
-        </li>
-        <li>
-          <input
-            type="radio"
-            name="theme-dropdown"
-            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
             aria-label="Halloween"
             value="halloween"
             data-set-theme="halloween"
@@ -184,14 +175,15 @@
         Transactionous <sup class="text-4xl -mt-2 absolute text-accent/50 prime -ml-8">Prime</sup>
       </h1>
 
-      <div class="card w-full bg-neutral text-neutral-content">
+      <div class="card w-full bg-base-200 text-neutral-content">
         <div class="card-body">
-          <h2 class="card-title">1. Choose a Transaction Template</h2>
+          <h2 class="card-title text-primary">1. Choose a Transaction Template</h2>
+          <p class="text-base100-content">Choose which UTXOs to spend. Only standard P2PKH outputs will be returned by the API.</p>
 
-          <ul class="menu menu-horizontal bg-base-200 rounded-box my-2">
+          <ul class="menu menu-horizontal bg-primary/50 text-primary-content rounded-box my-2">
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-accent"
+                class="hover:text-primary"
                 hx-post="/template/post"
                 hx-target="#jsonInput"
                 hx-trigger="click"
@@ -202,7 +194,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-accent"
+                class="hover:text-primary"
                 hx-post="/template/message"
                 hx-target="#jsonInput"
                 hx-swap="outerHTML transition:true"
@@ -213,7 +205,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-accent"
+                class="hover:text-primary"
                 hx-post="/template/bid"
                 hx-target="#jsonInput"
                 hx-trigger="click"
@@ -224,7 +216,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-accent"
+                class="hover:text-primary"
                 hx-post="/template/define-func"
                 hx-target="#jsonInput"
                 hx-trigger="click"
@@ -235,7 +227,7 @@
             </li>
             <li>
               <a onclick="javascript:htmx.findAll('.menu > li > a.active').forEach((a) => htmx.removeClass(a, 'active'));htmx.addClass(this, 'active');"
-                class="hover:text-accent"
+                class="hover:text-primary"
                 id="template-call-func"
                 hx-post="/template/call-func"
                 hx-target="#jsonInput"
@@ -248,8 +240,8 @@
           </ul>
 
           <form>
-            <div class="mockup-code">
-              <pre><code><textarea
+            <div class="mockup-code bg-base-300 text-base-content">
+              <pre><code class=""><textarea
                 class="w-full bg-transparent text-sm outline-none"
                 id="jsonInput"
                 name="jsonData"
@@ -260,10 +252,10 @@
             </div>
             
 
-            <div class="card-actions justify-end">
+            <div class="card-actions justify-end mt-4">
               <button
                 id="createTransaction"
-                class="btn"
+                class="btn bg-primary/75 text-primary-content hover:bg-primary"
                 hx-post="/transaction/create"
                 hx-target="#transaction"
               >
@@ -282,20 +274,20 @@
       hx-trigger="trans-utxo from:body"
     >
 
-      <div class="card w-full bg-neutral text-neutral-content mb-12">
+      <div class="card w-full  bg-base-200 text-neutral-content mb-12">
         <div class="card-body">
           <h2 class="card-title">Your Transaction So Far...</h2>
-          <div class="mockup-code bg-secondary text-secondary-content pl-4">
+          <div class="mockup-code bg-secondary/10 text-secondary pl-4">
             <pre><code id="transaction" class="whitespace-break-spaces break-all">no transaction generated</code></pre>
           </div>
         </div>
       </div>  
       
-      <div class="card w-full bg-neutral text-neutral-content">
+      <div class="card w-full  bg-base-200 text-neutral-content">
         <div class="card-body">
-          <h2 class="card-title">2. Fetch Unspent Transactions</h2>
+          <h2 class="card-title text-primary">2. Fetch Unspent Transactions</h2>
 
-          <p>To add some inputs to your tx, lets get the unspent outputs for the address associated with your key.</p>
+          <p class="text-base100-content">To add some inputs to your tx, lets get the unspent outputs for the address associated with your key.</p>
 
           <br />
           <div class="card-actions justify-end">
@@ -306,8 +298,8 @@
               hx-include="#jsonInput"
               hx-indicator="#spinner"
               hx-trigger="trans from:body"
-              class="btn"
-            >
+              class="btn bg-primary/75 text-primary-content hover:bg-primary"
+              >
               Get UTXOs <span id="spinner" class="spinner animate-spin">
                 <svg viewBox="0 0 50 50">
                   <circle
@@ -329,10 +321,10 @@
       class="py-12 h-screen max-w-4xl mx-auto"
       hx-on:trans-sign="document.getElementById('sign-page').scrollIntoView({behavior: 'smooth'});"
     >
-      <div class="card w-full bg-neutral text-neutral-content">
+      <div class="card w-full  bg-base-200 text-neutral-content">
         <div class="card-body">
-          <h2 class="card-title">3. Select Transaction Inputs</h2>
-          <div id="utxos" class="max-h-[75dvh] overflow-auto bg-neutral"></div>
+          <h2 class="card-title text-primary">3. Select Transaction Inputs</h2>
+          <div id="utxos" class="max-h-[75dvh] overflow-auto text-base200-content">No utxos for this 'pay' key.</div>
           <div class="card-actions justify-end">
             <button
               id="selectUtxos"
@@ -341,8 +333,8 @@
               hx-vals="js:{ transaction: document.getElementById('transaction').innerText }"
               hx-include="#utxos,#jsonInput"
               hx-trigger="click"
-              class="btn"
-            >
+              class="btn bg-primary/75 text-primary-content hover:bg-primary"
+              >
               Add Inputs
             </button>
           </div>
@@ -354,27 +346,27 @@
       class="max-w-4xl mx-auto h-screen py-12"
       hx-on:decode="document.getElementById('decode-page').scrollIntoView({behavior: 'smooth'});"
     >
-      <div class="card w-full bg-neutral text-neutral-content mb-12">
+      <div class="card w-full  bg-base-200 text-neutral-content mb-12">
         <div class="card-body">
           <h2 class="card-title">Your Transaction So Far...</h2>
           
-          <div class="mockup-code bg-secondary text-secondary-content pl-4">
+          <div class="mockup-code  bg-secondary/10 text-secondary pl-4">
             <pre><code id="signedTx" class="whitespace-break-spaces break-all">no transaction generated</code></pre>
           </div>
         </div>
       </div>
-      <div class="card w-full bg-neutral text-neutral-content">
+      <div class="card w-full  bg-base-200 text-neutral-content">
         <div class="card-body">
-          <h2 class="card-title">4. Identity Signatures</h2>
-          <p>Sign the transaction with a Sigma identity key. This will use the `key` from `sign`.</p>
+          <h2 class="card-title text-primary">4. Identity Signatures</h2>
+          <p class="text-base100-content">Sign the transaction with a Sigma identity key. This will use the `key` from `sign`.</p>
           <div class="card-actions justify-end">
             <button
               id="skipSign"
               hx-trigger="click"
               hx-on:decode="document.getElementById('decode-page').scrollIntoView({behavior: 'smooth'});"
               onclick="javascript:htmx.trigger('#skipSign', 'decode');"
-              class="btn"
-            >
+              class="btn bg-secondary/75 text-secondary-content hover:bg-secondary"
+              >
               Skip
             </button>
             <button
@@ -383,8 +375,8 @@
               hx-target="#signedTx"
               hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
               hx-include="#jsonInput"
-              class="btn"
-            >
+              class="btn bg-primary/75 text-primary-content hover:bg-primary"
+>
               Sign Transaction
             </button>
           </div>
@@ -392,11 +384,12 @@
       </div>
     </section>
     <section id="decode-page" class="py-12 h-screen max-w-4xl mx-auto">
-      <div class="card w-full bg-neutral text-neutral-content">
+      <div class="card w-full  bg-base-200 text-neutral-content">
         <div class="card-body">
-          <h2 class="card-title">Decoded Preview</h2>
+          <h2 class="card-title text-primary">5. Preview Transaction</h2>
+          <p class="text-base100-content">Decode the transaction to see what it looks like.</p>
+          <div class="mockup-code bg-secondary/10 text-secondary pl-4">
 
-          <mockup-code class="bg-secondary text-secondary-content pl-4">
             <pre><code
               class="whitespace-break-spaces break-all"
               id="result"
@@ -409,12 +402,12 @@
             >
               Sign Transaction First
             </code></pre>
-          </mockup-code>
+          </div>
  
           <div class="card-actions justify-end">
             <button
               id="broadcast"
-              class="btn"
+              class="btn bg-primary/75 text-primary-content hover:bg-primary"
               hx-post="/transaction/broadcast"
               hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
               hx-include="#jsonInput"
@@ -429,8 +422,8 @@
     <dialog id="bap_template_modal" class="modal">
       <div class="modal-box">
         <h3 class="font-bold text-lg">BAP ID Selected</h3>
-        <p class="py-4">To create a BAP ID we must generate a master key and derive an active signing key to use.</p>
-        <p class="py-4">Alternatively, you can upload an identity backup json file. This is not the same as a 1satordinals.com wallet json backup.</p>
+        <p class="py-4 text-base100-content">To create a BAP ID we must generate a master key and derive an active signing key to use.</p>
+        <p class="py-4 text-base100-content">Alternatively, you can upload an identity backup json file. This is not the same as a 1satordinals.com wallet json backup.</p>
         <div class="w-full">
           <input type="file" class="file-input w-full max-w-xs" />
         </div>
@@ -438,7 +431,7 @@
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
             <button class="btn bg-secondary">Cancel</button>
-            <button class="btn bg-primary">OK</button>
+            <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
       </div>
@@ -446,12 +439,12 @@
 
     <dialog id="no_utxos_modal" class="modal">
       <div class="modal-box">
-        <h3 class="font-bold text-lg">No Utxos Found!</h3>
-        <p class="py-4">Try using a different 'pay' key. Only standard P2PKH outputs will be returned by the API.</p>
+        <h3 class="font-bold text-lg text-accent">No Utxos Found!</h3>
+        <p class="py-4 text-secondary">Try using a different 'pay' key. Only standard P2PKH outputs will be returned by the API.</p>
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn bg-primary">OK</button>
+            <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
       </div>
@@ -464,7 +457,7 @@
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn bg-primary">OK</button>
+            <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
       </div>
@@ -476,7 +469,7 @@
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn bg-primary">OK</button>
+            <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
       </div>
@@ -489,7 +482,7 @@
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn bg-primary">OK</button>
+            <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
       </div>
@@ -502,7 +495,7 @@
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
-            <button class="btn bg-primary">OK</button>
+            <button class="btn bg-primary/75 text-primary-content hover:bg-primary">OK</button>
           </form>
         </div>
       </div>
