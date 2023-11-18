@@ -2,7 +2,7 @@
 import bmap from "bmapjs";
 const { TransformTx, supportedProtocols } = bmap;
 
-import { P2PKHAddress, PrivateKey, Transaction, TxIn } from "bsv-wasm";
+import { P2PKHAddress, PrivateKey, Transaction, TxIn, TxOut } from "bsv-wasm";
 import express from "express";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -29,6 +29,10 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "../www/index.html"));
 });
 
+// serve fonts
+app.get("/fonts/:font", (req, res) => {
+  res.sendFile(join(__dirname, "../www/fonts", req.params.font));
+});
 app.post("/transaction/sign", async (req, res) => {
   console.log(req.body);
   if (!req.body.transaction) {
@@ -208,6 +212,7 @@ app.post("/txo/unspent", async (req, res) => {
     let ords = (await fetchOrdUtxos(address.to_string())) || [];
 
     ords = ords.map((utxo) => ({
+      ...utxo,
       tx_hash: utxo.txid,
       tx_pos: utxo.vout,
       selected: false,
@@ -235,8 +240,8 @@ app.post("/txo/unspent", async (req, res) => {
       .map((utxo) => {
         return `<div class="form-control">
                 <label class="label cursor-pointer">
-                  <span class="label-text text-neutral-content">${utxo.tx_hash}:${utxo.tx_pos} sat</span> 
-                  <input name="utxo" type="checkbox" ${utxo.selected ? "checked" : ""} class="checkbox checkbox-neutral" value="${utxo.tx_hash}:${utxo.tx_pos}" />
+                  <span class="label-text text-neutral-content">${utxo.tx_hash}:${utxo.value} sat</span> 
+                  <input name="utxo" type="checkbox" ${utxo.selected ? "checked" : ""} class="checkbox checkbox-neutral" value="${utxo.tx_hash}:${utxo.tx_pos}:${utxo.value}" />
                 </label>
               </div>`;
       })
@@ -250,10 +255,10 @@ app.post("/txo/unspent", async (req, res) => {
 
 app.post("/txo/select", async (req, res) => {
   if (!req.body.utxo) {
-    res.status(400).send("No utxo provided");
+    return res.status(400).send("No utxo provided");
   }
   if (!req.body.transaction) {
-    res.status(400).send("No transaction provided");
+    return res.status(400).send("No transaction provided");
   }
 
   let tx = Transaction.from_hex(req.body.transaction);
@@ -268,7 +273,7 @@ app.post("/txo/select", async (req, res) => {
   }
 
   tx = newTx;
-  let inputs = req.body.utxo;
+  let inputs = req.body.utxo || [];
 
   // if only one input is selected, it will be a string, not an array
   if (req.body.utxo && !Array.isArray(req.body.utxo)) {
@@ -287,8 +292,11 @@ app.post("/txo/select", async (req, res) => {
   let inputTxs = rawTxs.map((rawTx) => Transaction.from_hex(rawTx));
 
   // now add the inputs to the tx
+  let totalInputValue = 0
   inputs.forEach((input, index) => {
-    let [txid, idx] = input.split(":");
+    let [txid, idx, value] = input.split(":");
+
+    totalInputValue += Number(value)
 
     // find the tx by txid
     let inputTx = inputTxs.find((t) => t.get_id_hex() === txid);
@@ -304,6 +312,25 @@ app.post("/txo/select", async (req, res) => {
       )
     );
   });
+
+  // manually calculate fee based on 1 satoshi per byte
+  const size = tx.to_hex().length / 2;
+  const fee = BigInt(size);
+  const totalInput = BigInt(totalInputValue) || tx.satoshis_in() || BigInt(0);
+  const totalOutput = tx.satoshis_out() || BigInt(0);
+  const change = totalInput - totalOutput - fee;
+  console.log("totalInput", Number(change), Number(totalInput));
+
+  // add change output
+  if (change > 0) {
+    console.log("adding change output", change, req.body.jsonData);
+    // get change address from pay key
+    const address = P2PKHAddress.from_pubkey(
+      PrivateKey.from_wif(JSON.parse(req.body.jsonData).pay[0].key).to_public_key()
+    );
+    console.log("adding change output", change);
+    tx.add_output(new TxOut(change, address.get_locking_script()));
+  }
 
   console.log(
     `Constructed transaction with ${tx.get_ninputs()} inputs and ${tx.get_noutputs()} outputs`

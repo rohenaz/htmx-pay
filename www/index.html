@@ -2,6 +2,42 @@
 <html>
   <head>
     <title>BSV Transaction Creator</title>
+    <link rel="preload" href="/fonts/TransformersMovie.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave&display=swap" rel="stylesheet">
+    <style type="text/css">
+      html {
+        height: 100vh;
+        overflow: hidden;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        scroll-snap-type: y mandatory;
+        overflow-y: scroll;
+        height: 100vh;
+      }
+      section {
+        scroll-snap-align: end;
+      }
+      h1 {
+        font-family: 'Transformers Movie';
+      }
+      @font-face {
+          font-family: 'Transformers Movie';
+          src: url('/fonts/TransformersMovie.woff2') format('woff2'),
+              url('/fonts/TransformersMovie.woff') format('woff');
+          font-weight: bold;
+          font-style: normal;
+          font-display: swap;
+      }
+
+      .prime {
+        font-family: 'Sedgwick Ave', cursive;
+        transform: rotate(15deg);
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
     <script src="https://unpkg.com/datapay"></script>
     <script src="./databutton.js"></script>
@@ -12,6 +48,7 @@
     />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org"></script>
+
   </head>
   <body class="relative">
     <div class="fixed top-0 right-0 mt-12 mr-12">
@@ -98,7 +135,7 @@
       hx-trigger="trans from:body"
     >
       <h1 class="text-5xl font-semibold text-center relative my-8">
-        Transactionous <sup class="text-lg -mt-2 absolute text-accent">Prime</sup>
+        Transactionous <sup class="text-4xl -mt-2 absolute text-accent/50 prime -ml-8">Prime</sup>
       </h1>
 
       <div class="card w-full bg-neutral text-neutral-content">
@@ -256,7 +293,7 @@
               hx-post="/txo/select"
               hx-target="#signedTx"
               hx-vals="js:{ transaction: document.getElementById('transaction').innerText }"
-              hx-include="#utxos"
+              hx-include="#utxos,#jsonInput"
               hx-trigger="click"
               class="btn"
             >
@@ -271,16 +308,15 @@
       class="max-w-4xl mx-auto h-screen py-12"
       hx-on:decode="document.getElementById('decode-page').scrollIntoView({behavior: 'smooth'});"
     >
-
-    <div class="card w-full bg-neutral text-neutral-content mb-12">
-      <div class="card-body">
-        <h2 class="card-title">Your Transaction So Far...</h2>
-        
-        <div class="mockup-code bg-secondary text-secondary-content pl-4">
-          <pre><code id="signedTx" class="whitespace-break-spaces break-all">no transaction generated</code></pre>
-
-       </div> 
-  </div>
+      <div class="card w-full bg-neutral text-neutral-content mb-12">
+        <div class="card-body">
+          <h2 class="card-title">Your Transaction So Far...</h2>
+          
+          <div class="mockup-code bg-secondary text-secondary-content pl-4">
+            <pre><code id="signedTx" class="whitespace-break-spaces break-all">no transaction generated</code></pre>
+          </div>
+        </div>
+      </div>
       <div class="card w-full bg-neutral text-neutral-content">
         <div class="card-body">
           <h2 class="card-title">4. Identity Signatures</h2>
@@ -313,18 +349,22 @@
       <div class="card w-full bg-neutral text-neutral-content">
         <div class="card-body">
           <h2 class="card-title">Decoded Preview</h2>
-          <code
-          class="whitespace-pre-wrap textarea rounded p-4 my-2 text-sm overflow-x-auto"
-            id="result"
-            hx-trigger="decode from:body"
-            hx-post="/transaction/decode"
-            hx-swap="innerText"
-            hx-include="#signedTx"
-            hx-on:decode="console.log('decoding!')"
-            hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
-          >
-            Sign Transaction First
-          </code>
+
+          <mockup-code class="bg-secondary text-secondary-content pl-4">
+            <pre><code
+              class="whitespace-break-spaces break-all"
+              id="result"
+              hx-trigger="decode from:body"
+              hx-post="/transaction/decode"
+              hx-swap="innerText"
+              hx-include="#signedTx"
+              hx-on:decode="console.log('decoding!')"
+              hx-vals="js:{ transaction: document.getElementById('signedTx').innerText }"
+            >
+              Sign Transaction First
+            </code></pre>
+          </mockup-code>
+ 
           <div class="card-actions justify-end">
             <button
               id="broadcast"
@@ -343,7 +383,11 @@
     <dialog id="bap_template_modal" class="modal">
       <div class="modal-box">
         <h3 class="font-bold text-lg">BAP ID Selected</h3>
-        <p class="py-4">To create a BAP ID we must generate a master key and derive a signing key.</p>
+        <p class="py-4">To create a BAP ID we must generate a master key and derive an active signing key to use.</p>
+        <p class="py-4">Alternatively, you can upload an identity backup json file. This is not the same as a 1satordinals.com wallet json backup.</p>
+        <div class="w-full">
+          <input type="file" class="file-input w-full max-w-xs" />
+        </div>
         <div class="modal-action">
           <form method="dialog">
             <!-- if there is a button in form, it will close the modal -->
