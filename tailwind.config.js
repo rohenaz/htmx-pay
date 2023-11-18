@@ -1,8 +1,9 @@
 module.exports = {
   daisyui: {
     themes: [
+      "coffee",
       {
-        mytheme: {
+        streetkid: {
           primary: "#075985",
           secondary: "#57534e",
           accent: "#fb923c",
@@ -14,13 +15,11 @@ module.exports = {
           error: "#fca5a5",
         },
       },
-      "coffee",
       "dark",
-      "emerald",
       "forest",
       "halloween",
-      "lofi",
       "wireframe",
+      "bumblebee",
     ],
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
